@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8vp0rb4bvpa"]
-
-[ext_resource type="Texture2D" uid="uid://crabedym1gcgn" path="res://art/pawn/black.png" id="1_joqft"]
-
-[node name="pawn" type="Node2D"]
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture_filter = 1
-texture = ExtResource("1_joqft")

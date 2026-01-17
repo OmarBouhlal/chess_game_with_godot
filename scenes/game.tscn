@@ -1,82 +1,15 @@
-[gd_scene load_steps=9 format=3 uid="uid://iaj3yoe8woad"]
+[gd_scene load_steps=3 format=3 uid="uid://iaj3yoe8woad"]
 
 [ext_resource type="PackedScene" uid="uid://nqfm52m8x40n" path="res://scenes/board.tscn" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://b6xovyb45d06i" path="res://scripts/game.gd" id="1_yqjtg"]
-[ext_resource type="PackedScene" uid="uid://b8vp0rb4bvpa" path="res://scenes/pieces/pawn.tscn" id="3_iywne"]
-[ext_resource type="PackedScene" uid="uid://bm7ncglpfst7s" path="res://scenes/pieces/knight.tscn" id="4_p57ef"]
-[ext_resource type="PackedScene" uid="uid://dswx1xt6h1es3" path="res://scenes/pieces/rook.tscn" id="5_u5sy4"]
-[ext_resource type="PackedScene" uid="uid://dhay5wadrjut1" path="res://scenes/pieces/queen.tscn" id="6_p57ef"]
-[ext_resource type="PackedScene" uid="uid://bhf1yfct2hl73" path="res://scenes/pieces/bishop.tscn" id="7_u5sy4"]
-[ext_resource type="PackedScene" uid="uid://4f5jytdyhmmp" path="res://scenes/pieces/king.tscn" id="8_gee14"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_yqjtg")
 
 [node name="Board" parent="." instance=ExtResource("1_uwrxv")]
-
-[node name="pieces" type="Node" parent="."]
-
-[node name="pawn" type="Node" parent="pieces"]
-
-[node name="pawn" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(11, 30)
-
-[node name="pawn2" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(31, 30)
-
-[node name="pawn3" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(51, 30)
-
-[node name="pawn4" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(70, 30)
-
-[node name="pawn5" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(91, 30)
-
-[node name="pawn6" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(111, 31)
-
-[node name="pawn7" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(131, 31)
-
-[node name="pawn8" parent="pieces/pawn" instance=ExtResource("3_iywne")]
-position = Vector2(152, 30)
-
-[node name="knight" type="Node" parent="pieces"]
-
-[node name="knight" parent="pieces/knight" instance=ExtResource("4_p57ef")]
-position = Vector2(31, 11)
-
-[node name="knight2" parent="pieces/knight" instance=ExtResource("4_p57ef")]
-position = Vector2(131, 12)
-
-[node name="rook" type="Node" parent="pieces"]
-
-[node name="rook" parent="pieces/rook" instance=ExtResource("5_u5sy4")]
-position = Vector2(11, 11)
-
-[node name="rook2" parent="pieces/rook" instance=ExtResource("5_u5sy4")]
-position = Vector2(151, 11)
-
-[node name="queen" type="Node" parent="pieces"]
-
-[node name="queen" parent="pieces/queen" instance=ExtResource("6_p57ef")]
-position = Vector2(72, 11)
-
-[node name="bishop" type="Node" parent="pieces"]
-
-[node name="bishop2" parent="pieces/bishop" instance=ExtResource("7_u5sy4")]
-position = Vector2(50, 11)
-
-[node name="bishop3" parent="pieces/bishop" instance=ExtResource("7_u5sy4")]
-position = Vector2(111, 11)
-
-[node name="king" type="Node" parent="pieces"]
-
-[node name="king2" parent="pieces/king" instance=ExtResource("8_gee14")]
-position = Vector2(91, 12)
+position = Vector2(0, -160)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(-101, -29)
+position = Vector2(-110, -184)
 anchor_mode = 0
 zoom = Vector2(3, 3)
