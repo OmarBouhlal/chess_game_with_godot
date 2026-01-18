@@ -21,3 +21,5 @@ tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAAAAIAAAAAAAA
 tile_set = SubResource("TileSet_sugp2")
 
 [node name="pieces" type="Node2D" parent="."]
+
+[node name="dots" type="Node2D" parent="."]
