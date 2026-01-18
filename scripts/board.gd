@@ -126,8 +126,8 @@ func delete_dots():
 	for child in dots.get_children():
 		child.queue_free()		
 func set_move(var2,var1):
-		for i in moves:
-			if i.x == var2 && i.y == var1:
+		for move in moves:
+			if move.x == var2 && move.y == var1:
 				board[var2][var1] = board[selected_piece.x][selected_piece.y]
 				board[selected_piece.x][selected_piece.y] = 0
 				white = !white
