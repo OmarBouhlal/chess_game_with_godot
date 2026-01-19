@@ -63,6 +63,12 @@ var white_rook_left = false
 var white_rook_right = false
 var black_rook_left = false
 var black_rook_right = false
+
+# Checking
+var white_king_pos = Vector2(0,4)
+var black_king_pos = Vector2(7,4)
+
+
 func _ready() -> void:
 	panel_container.visible = false
 	board.append([5,4,3,2,1,3,4,5])
@@ -195,7 +201,8 @@ func check_castling(move):
 								white_rook_left = true
 								white_rook_right = true
 								board[0][7] = 0
-								board[0][5] = 5	
+								board[0][5] = 5
+						white_king_pos = move		
 					-1:
 						if selected_piece.x == 7 && selected_piece.y == 4:
 							black_king = true
@@ -208,7 +215,8 @@ func check_castling(move):
 								black_rook_left = true
 								black_rook_right = true
 								board[7][7] = 0
-								board[7][5] = -5	
+								board[7][5] = -5
+						black_king_pos = move			
 					5:
 						if selected_piece.x == 0 && selected_piece.y == 0:
 							white_rook_left = true
@@ -240,7 +248,42 @@ func _on_piece_selected(piece_type: int):
 	white = !white
 	panel_container.visible = false
 	draw_board()	
-								
+
+func is_in_check(king_pos:Vector2):
+	var directions = [Vector2(1,1),Vector2(1,-1),Vector2(-1,-1),Vector2(-1,1),Vector2(0,1),Vector2(0,-1),Vector2(1,0),Vector2(-1,0)]
+	var pawn_direction = 1 if white else -1
+	var pawn_attacks = [
+		 king_pos + Vector2(pawn_direction,1),
+		 king_pos + Vector2(pawn_direction,-1)
+	]
+	for attack in pawn_attacks:
+		if is_valid_position(attack):
+			if is_enemy(attack) && abs(board[attack.x][attack.y]) == 6:
+				return true
+	for i in directions:
+		var pos = king_pos + i
+		if is_valid_position(pos):
+			if white && board[pos.x][pos.y] == -6 || !white && board[pos.x][pos.y] == 6:
+				return true
+	for i in directions:
+		var pos = king_pos + i
+		while is_valid_position(pos):
+			if !is_empty(pos):
+				var piece = board[pos.x][pos.y]
+				if (i.x == 0 || i.y == 0) && (white && piece in [-2,-5] || !white && piece in [2,5]):
+					return true
+				elif (i.x != 0 && i.y != 0) && (white && piece in [-2,-3] || !white && piece in [2,3]) :
+					return true
+				break
+			pos += i							
+	var knight_directions = [Vector2(2,1),Vector2(2,-1),Vector2(1,2),Vector2(-1,2),Vector2(-2,1),Vector2(-2,-1),Vector2(1,-2),Vector2(-1,-2)]	
+	for i in knight_directions:
+		var pos = king_pos + i
+		if is_valid_position(pos):
+			if white && board[pos.x][pos.y] == -4 || !white && board[pos.x][pos.y] == 4:
+				return true
+	return false			
+									
 func get_actions():
 	var _moves= []
 	match abs(board[selected_piece.x][selected_piece.y]):
@@ -306,13 +349,18 @@ func get_king_actions():
 	var _moves = []
 	var directions = [Vector2(1,1),Vector2(1,-1),Vector2(-1,-1),Vector2(-1,1),Vector2(0,1),Vector2(0,-1),Vector2(1,0),Vector2(-1,0)]
 	
+	if white:
+		board[white_king_pos.x][white_king_pos.y] = 0
+	else:
+		board[black_king_pos.x][black_king_pos.y] = 0
 	for i in directions:
 		var pos = selected_piece
 		pos += i
 		if is_valid_position(pos):
-			if is_empty(pos): _moves.append(pos)
-			elif is_enemy(pos):
-				_moves.append(pos)
+			if !is_in_check(pos):
+				if is_empty(pos): _moves.append(pos)
+				elif is_enemy(pos):
+					_moves.append(pos)
 	if white && !white_king:
 		if 	!white_rook_left && is_empty(Vector2(0,1)) && is_empty(Vector2(0,2)) && is_empty(Vector2(0,3)):
 			_moves.append(Vector2(0,2))	
@@ -323,6 +371,10 @@ func get_king_actions():
 			_moves.append(Vector2(7,2))	
 		if 	!black_rook_right && is_empty(Vector2(7,6)) && is_empty(Vector2(7,5)):
 			_moves.append(Vector2(7,6))	
+	if white:
+		board[white_king_pos.x][white_king_pos.y] = 1
+	else:
+		board[black_king_pos.x][black_king_pos.y] = 1		
 	return _moves			
 
 func get_knight_actions():
