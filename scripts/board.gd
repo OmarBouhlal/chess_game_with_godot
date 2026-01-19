@@ -4,6 +4,11 @@ const BOARD_SIZE = 8
 const CELL_W = 20
 
 const TEXTURE_HOLDER = preload("res://scenes/texture_holder.tscn")
+const PROMOTION_CHOICE = preload("res://scenes/texture_button.tscn")
+@onready var panel_container: PanelContainer = $PanelContainer
+@onready var grid_container: GridContainer = $PanelContainer/BoxContainer/GridContainer
+
+
 
 # Possible move
 const PIECE_MOVE = preload("res://art/dot/piece_move.png")
@@ -35,6 +40,7 @@ var white : bool = true
 var state : bool = false
 var selected_piece : Vector2
 var moves = []
+var promotion_pos : Vector2
 
 # number -> type of piece and color
 # + : white
@@ -48,7 +54,17 @@ var moves = []
 # 5 : rook
 # 6 : pawn
 
+
+# Castling
+var white_king = false
+var black_king = false
+
+var white_rook_left = false
+var white_rook_right = false
+var black_rook_left = false
+var black_rook_right = false
 func _ready() -> void:
+	panel_container.visible = false
 	board.append([5,4,3,2,1,3,4,5])
 	board.append([6,6,6,6,6,6,6,6])
 	board.append([0,0,0,0,0,0,0,0])
@@ -70,24 +86,43 @@ func draw_board():
 			pieces.add_child(piece_holder)
 			piece_holder.global_position = Vector2(j*CELL_W + floor(CELL_W / 2) , - i * CELL_W - floor(CELL_W / 2) )
 			
-			match board[i][j]:
+			piece_holder.texture = get_piece_texture(board[i][j])
+			#match board[i][j]:
+				## BLACK Player :
+				#-6: piece_holder.texture = BLACK_PAWN
+				#-5: piece_holder.texture = BLACK_ROOK
+				#-4: piece_holder.texture = BLACK_KNIGHT
+				#-3: piece_holder.texture = BLACK_BISHOP
+				#-2: piece_holder.texture = BLACK_QUEEN
+				#-1: piece_holder.texture = BLACK_KING
+				## no piece:
+				#0: piece_holder.texture = null
+				## WHITE Player :
+				#1: piece_holder.texture = WHITE_KING
+				#2: piece_holder.texture = WHITE_QUEEN
+				#3: piece_holder.texture = WHITE_BISHOP
+				#4: piece_holder.texture = WHITE_KNIGHT
+				#5: piece_holder.texture = WHITE_ROOK
+				#6: piece_holder.texture = WHITE_PAWN
+				
+func get_piece_texture(piece_value):
+	match piece_value:
 				# BLACK Player :
-				-6: piece_holder.texture = BLACK_PAWN
-				-5: piece_holder.texture = BLACK_ROOK
-				-4: piece_holder.texture = BLACK_KNIGHT
-				-3: piece_holder.texture = BLACK_BISHOP
-				-2: piece_holder.texture = BLACK_QUEEN
-				-1: piece_holder.texture = BLACK_KING
+				-6: return BLACK_PAWN
+				-5: return BLACK_ROOK
+				-4: return BLACK_KNIGHT
+				-3: return BLACK_BISHOP
+				-2: return BLACK_QUEEN
+				-1: return BLACK_KING
 				# no piece:
-				0: piece_holder.texture = null
+				0: return null
 				# WHITE Player :
-				1: piece_holder.texture = WHITE_KING
-				2: piece_holder.texture = WHITE_QUEEN
-				3: piece_holder.texture = WHITE_BISHOP
-				4: piece_holder.texture = WHITE_KNIGHT
-				5: piece_holder.texture = WHITE_ROOK
-				6: piece_holder.texture = WHITE_PAWN
-
+				1: return WHITE_KING
+				2: return WHITE_QUEEN
+				3: return WHITE_BISHOP
+				4: return WHITE_KNIGHT
+				5: return WHITE_ROOK
+				6: return WHITE_PAWN
 func _input(event):
 	if event is InputEventMouseButton && event.pressed:
 		if event.button_index  == MOUSE_BUTTON_LEFT:
@@ -128,13 +163,84 @@ func delete_dots():
 func set_move(var2,var1):
 		for move in moves:
 			if move.x == var2 && move.y == var1:
+				check_castling(move)
 				board[var2][var1] = board[selected_piece.x][selected_piece.y]
 				board[selected_piece.x][selected_piece.y] = 0
-				white = !white
-				draw_board()	
+				var is_promotion = check_promotion(var2,var1)
+				if is_promotion:
+					promotion_pos = Vector2(var2,var1)
+					display_promotion_choices()
+				else:	
+					white = !white
+					draw_board()	
 				break	
 		delete_dots()
-		state = false			
+		state = false	
+func check_promotion(var2,var1):
+	if abs(board[var2][var1]) == 6  && (var2 == 7 || var2 == 0):
+		print("you can promote")
+		return true
+	return false
+func check_castling(move):
+	match board[selected_piece.x][selected_piece.y]:
+					1:
+						if selected_piece.x == 0 && selected_piece.y == 4:
+							white_king = true
+							if move.y == 2:
+								white_rook_left = true
+								white_rook_right = true
+								board[0][0] = 0
+								board[0][3] = 5
+							if move.y == 6:
+								white_rook_left = true
+								white_rook_right = true
+								board[0][7] = 0
+								board[0][5] = 5	
+					-1:
+						if selected_piece.x == 7 && selected_piece.y == 4:
+							black_king = true
+							if move.y == 2:
+								black_rook_left = true
+								black_rook_right = true
+								board[7][0] = 0
+								board[7][3] = -5
+							if move.y == 6:
+								black_rook_left = true
+								black_rook_right = true
+								board[7][7] = 0
+								board[7][5] = -5	
+					5:
+						if selected_piece.x == 0 && selected_piece.y == 0:
+							white_rook_left = true
+						elif selected_piece.x == 0 && selected_piece.y == 7:
+							white_rook_right = true	
+					-5:	
+						if selected_piece.x == 7 && selected_piece.y == 0:
+							black_rook_left = true
+						elif selected_piece.x == 7 && selected_piece.y == 7:
+							black_rook_right = true			
+func display_promotion_choices():
+	for child in grid_container.get_children():
+		child.queue_free()
+	var choices = [2,5,3,4]
+	for choice in choices:
+		var final_choice = choice if white else -choice
+		var choice_holder:TextureButton = PROMOTION_CHOICE.instantiate()
+		choice_holder.texture_normal = get_piece_texture(final_choice)
+		choice_holder.custom_minimum_size = Vector2(CELL_W,CELL_W)
+		choice_holder.ignore_texture_size = true
+		choice_holder.stretch_mode = TextureButton.STRETCH_KEEP_CENTERED
+		choice_holder.pressed.connect(_on_piece_selected.bind(final_choice))
+		grid_container.add_child(choice_holder)
+	panel_container.visible = true	
+	
+func _on_piece_selected(piece_type: int):
+	
+	board[promotion_pos.x][promotion_pos.y] = piece_type
+	white = !white
+	panel_container.visible = false
+	draw_board()	
+								
 func get_actions():
 	var _moves= []
 	match abs(board[selected_piece.x][selected_piece.y]):
@@ -207,6 +313,16 @@ func get_king_actions():
 			if is_empty(pos): _moves.append(pos)
 			elif is_enemy(pos):
 				_moves.append(pos)
+	if white && !white_king:
+		if 	!white_rook_left && is_empty(Vector2(0,1)) && is_empty(Vector2(0,2)) && is_empty(Vector2(0,3)):
+			_moves.append(Vector2(0,2))	
+		if 	!white_rook_right && is_empty(Vector2(0,6)) && is_empty(Vector2(0,5)):
+			_moves.append(Vector2(0,6))	
+	elif !white && !black_king:
+		if 	!black_rook_left && is_empty(Vector2(7,1)) && is_empty(Vector2(7,2)) && is_empty(Vector2(7,3)):
+			_moves.append(Vector2(7,2))	
+		if 	!black_rook_right && is_empty(Vector2(7,6)) && is_empty(Vector2(7,5)):
+			_moves.append(Vector2(7,6))	
 	return _moves			
 
 func get_knight_actions():
