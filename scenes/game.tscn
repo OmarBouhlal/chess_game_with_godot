@@ -1,7 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://iaj3yoe8woad"]
+[gd_scene load_steps=5 format=3 uid="uid://iaj3yoe8woad"]
 
 [ext_resource type="PackedScene" uid="uid://nqfm52m8x40n" path="res://scenes/board.tscn" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://b6xovyb45d06i" path="res://scripts/game.gd" id="1_yqjtg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yqjtg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lnu2h"]
+bg_color = Color(0.24841267, 0.69594264, 0.47855604, 1)
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_yqjtg")
@@ -13,3 +18,13 @@ position = Vector2(0, -160)
 position = Vector2(-110, -184)
 anchor_mode = 0
 zoom = Vector2(3, 3)
+
+[node name="Label" type="Label" parent="."]
+texture_filter = 1
+offset_left = 170.0
+offset_top = -180.0
+offset_right = 266.0
+offset_bottom = -142.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_yqjtg")
+theme_override_styles/focus = SubResource("StyleBoxFlat_lnu2h")
+language = "en"
